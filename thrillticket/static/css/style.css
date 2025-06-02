@@ -1,18 +1,37 @@
-/* Font from Google */
+/* Import Horror Font */
 @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
 
+/* GLOBAL PAGE */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    background: #1a1b1a;
     color: #eee1cd;
     line-height: 1.6;
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 1.5s ease-in-out forwards;
 }
 
-/* Header */
+/* DARK OVERLAY */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: -1;
+}
+
+/* FADE IN ANIMATION */
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+/* HEADER */
 header {
-    background: #3b3b36;
+    background: rgba(59, 59, 54, 0.95);
     color: #eee1cd;
     padding: 1.5rem 2rem;
     display: flex;
@@ -39,9 +58,9 @@ nav a:hover {
     color: #ff4444;
 }
 
-/* Hero Section */
+/* HERO SECTION */
 .hero {
-    padding: 4rem 2rem;
+    padding: 5rem 2rem 3rem;
     text-align: center;
     color: #eee1cd;
     position: relative;
@@ -74,17 +93,17 @@ button:hover {
     transform: scale(1.05);
 }
 
-/* Generic Section Styling */
+/* GENERIC SECTIONS */
 section {
     padding: 2rem;
     margin: 1rem auto;
     max-width: 1000px;
-    background: #3b3b36;
+    background: rgba(59, 59, 54, 0.9);
     border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
-/* Attractions */
+/* ATTRACTIONS */
 .types ul {
     list-style: none;
     padding: 0;
@@ -95,9 +114,9 @@ section {
     font-size: 1.3rem;
 }
 
-/* Testimonials */
+/* TESTIMONIALS */
 .testimonials blockquote {
-    background: #2a2a2a;
+    background: rgba(42, 42, 42, 0.8);
     border-left: 4px solid #ff4444;
     margin: 1rem 0;
     padding: 1rem;
@@ -112,7 +131,7 @@ section {
     font-size: 0.9rem;
 }
 
-/* Contact */
+/* CONTACT FORM */
 .contact form input,
 .contact form textarea {
     width: 100%;
@@ -129,16 +148,16 @@ section {
     margin-top: 0.5rem;
 }
 
-/* About Org Section */
+/* ABOUT ORG SECTION */
 .about-org {
-    background: #3b3b36;
+    background: rgba(59, 59, 54, 0.9);
 }
 
-/* Footer */
+/* FOOTER */
 footer {
     text-align: center;
     padding: 2rem 1rem;
-    background: #1a1b1a;
+    background: rgba(26, 27, 26, 0.95);
     color: #eee1cd;
     font-size: 0.9rem;
     border-top: 1px solid #3b3b36;
