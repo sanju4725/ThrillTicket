@@ -1,55 +1,75 @@
-/* Import Horror Font */
 @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
 
-/* GLOBAL PAGE */
+/* COLOR VARIABLES */
+:root {
+    --bg: #1a1b1a;
+    --fg: #ffffff;
+    --accent: #697565;
+    --nav: #5c6753;
+    --footer: #3C3D37;
+    --section-bg: rgba(59, 59, 54, 0.9);
+    --overlay: rgba(0, 0, 0, 0.7);
+}
+
+/* GENERAL */
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
-    color: #eee1cd;
-    line-height: 1.6;
+    color: var(--fg);
+    line-height: 1.8;
     position: relative;
     opacity: 0;
     animation: fadeIn 1.5s ease-in-out forwards;
+    text-align: center;
+    font-size: 16px;
 }
 
-/* DARK OVERLAY */
+/* OVERLAY */
 body::before {
     content: "";
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: var(--overlay);
     z-index: -1;
 }
 
-/* FADE IN ANIMATION */
+/* FADE IN */
 @keyframes fadeIn {
-    to {
-        opacity: 1;
-    }
+    to { opacity: 1; }
 }
+
+/* HEADINGS */
+h1, h2, h3, h4 {
+    color: var(--fg);
+    margin: 0.5rem 0;
+}
+
+h1 { font-size: 36px; }
+h2 { font-size: 32px; }
+h3 { font-size: 28px; }
 
 /* HEADER */
 header {
-    background: rgba(59, 59, 54, 0.95);
-    color: #eee1cd;
-    padding: 1.5rem 2rem;
+    background: var(--section-bg);
+    padding: 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-family: 'Creepster', cursive;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    flex-wrap: wrap;
 }
 
-header h1 {
-    font-size: 2.5rem;
+nav {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 nav a {
-    color: #eee1cd;
-    margin-left: 1.5rem;
+    color: var(--fg);
     text-decoration: none;
-    font-family: sans-serif;
     font-weight: bold;
     transition: color 0.3s;
 }
@@ -58,109 +78,102 @@ nav a:hover {
     color: #ff4444;
 }
 
-/* HERO SECTION */
+/* HERO */
 .hero {
     padding: 5rem 2rem 3rem;
-    text-align: center;
-    color: #eee1cd;
     position: relative;
 }
 
 .hero h2 {
     font-family: 'Creepster', cursive;
-    font-size: 4rem;
+    font-size: 48px;
     margin-bottom: 1rem;
 }
 
 .hero p {
-    font-size: 1.2rem;
+    font-size: 24px;
 }
 
 button {
-    margin-top: 1rem;
-    padding: 1rem 2rem;
-    background: #69725f;
+    padding: 1.5rem 2.5rem;
+    background: var(--accent);
     border: none;
-    color: #eee1cd;
-    font-size: 1rem;
+    color: var(--fg);
+    font-size: 20px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 10px;
     transition: background 0.3s ease, transform 0.2s ease;
+    margin-top: 1rem;
 }
 
 button:hover {
-    background: #5c6753;
+    background: var(--nav);
     transform: scale(1.05);
 }
 
-/* GENERIC SECTIONS */
+/* SECTIONS */
 section {
-    padding: 2rem;
-    margin: 1rem auto;
+    padding: 3rem 2rem;
+    margin: 2rem auto;
     max-width: 1000px;
-    background: rgba(59, 59, 54, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    background: var(--section-bg);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-/* ATTRACTIONS */
+/* TYPES */
 .types ul {
     list-style: none;
     padding: 0;
 }
 
 .types li {
-    margin: 0.75rem 0;
-    font-size: 1.3rem;
+    margin: 1rem 0;
+    font-size: 22px;
 }
 
 /* TESTIMONIALS */
 .testimonials blockquote {
     background: rgba(42, 42, 42, 0.8);
     border-left: 4px solid #ff4444;
-    margin: 1rem 0;
-    padding: 1rem;
+    margin: 2rem auto;
+    padding: 1.5rem;
     font-style: italic;
-    color: #eee1cd;
+    color: var(--fg);
+    border-radius: 10px;
 }
 
 .testimonials cite {
     display: block;
-    margin-top: 0.5rem;
-    color: #aaa;
-    font-size: 0.9rem;
+    margin-top: 1rem;
+    color: #ccc;
 }
 
-/* CONTACT FORM */
+/* FORM */
 .contact form input,
 .contact form textarea {
     width: 100%;
-    padding: 0.8rem;
-    margin: 0.5rem 0;
+    padding: 1.2rem;
+    margin: 0.75rem 0;
     background: #1a1b1a;
-    color: #eee1cd;
-    border: 1px solid #5c6753;
-    border-radius: 5px;
+    color: var(--fg);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    font-size: 20px;
 }
 
 .contact form button {
-    width: auto;
-    margin-top: 0.5rem;
-}
-
-/* ABOUT ORG SECTION */
-.about-org {
-    background: rgba(59, 59, 54, 0.9);
+    margin-top: 1rem;
 }
 
 /* FOOTER */
 footer {
     text-align: center;
     padding: 2rem 1rem;
-    background: rgba(26, 27, 26, 0.95);
-    color: #eee1cd;
-    font-size: 0.9rem;
-    border-top: 1px solid #3b3b36;
+    background: var(--footer);
+    color: var(--fg);
+    font-size: 18px;
+    border-top: 1px solid var(--nav);
 }
 
 .footer-links {
@@ -168,9 +181,10 @@ footer {
 }
 
 .footer-links a {
-    color: #eee1cd;
-    margin: 0 0.5rem;
+    color: var(--fg);
+    margin: 0 1rem;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .footer-links a:hover {
