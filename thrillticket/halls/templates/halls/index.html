@@ -10,7 +10,10 @@
 <body style="background: url('{% static 'images/haunted-bg.jpg' %}') no-repeat center center fixed; background-size: cover;">
 
     <header>
-        <h1>ThrillTicket</h1>
+        <div class="header-content">
+            <h1>ThrillTicket</h1>
+            <p class="subtitle">Enter If You Dare</p>
+        </div>
         <nav>
             <a href="#">Home</a>
             <a href="#about">About</a>
@@ -20,72 +23,69 @@
         </nav>
     </header>
 
-    <section class="hero">
-        <h2>Enter If You Dare</h2>
-        <p>Experience the nightmare maze — the ultimate horror walkthrough.</p>
-        <button>Book Your Scare</button>
-    </section>
+    <main>
+        <section class="about" id="about">
+            <h3>About ThrillTicket</h3>
+            <p>
+                ThrillTicket is your gateway to scream-inducing fun! Step into a haunted maze filled with shadows, screams, and sinister surprises. We create the ultimate horror experience for thrill-seekers and brave souls.
+            </p>
+        </section>
 
-    <section class="about" id="about">
-        <h3>About ThrillTicket</h3>
-        <p>
-            ThrillTicket is your gateway to scream-inducing fun! Step into a haunted maze filled with shadows, screams, and sinister surprises. We create the ultimate horror experience for thrill-seekers and brave souls.
-        </p>
-    </section>
+        <section class="types" id="attractions">
+            <h3>Haunted Highlights</h3>
+            <ul>
+                <li>👹 Maze of Shadows</li>
+                <li>🧟 Zombie Alley</li>
+                <li>🎭 Hall of Screams</li>
+                <li>🩸 The Butcher’s Basement</li>
+            </ul>
+        </section>
 
-    <section class="types" id="attractions">
-        <h3>Haunted Highlights</h3>
-        <ul>
-            <li>👹 Maze of Shadows</li>
-            <li>🧟 Zombie Alley</li>
-            <li>🎭 Hall of Screams</li>
-            <li>🩸 The Butcher’s Basement</li>
-        </ul>
-    </section>
+        <section class="testimonials" id="testimonials">
+            <h3>Survivor Testimonials</h3>
+            <blockquote>
+                <p>"I thought it was fake... until the lights went out. I screamed so hard I forgot my name!"</p>
+                <cite>– Jamie L., Possibly still lost in the maze</cite>
+            </blockquote>
+            <blockquote>
+                <p>"The Butcher’s Basement? Nope. Never again. 10/10 would recommend... to my enemies."</p>
+                <cite>– Raj P., Nervous wreck</cite>
+            </blockquote>
+            <blockquote>
+                <p>"Incredible production! Felt like a movie — a terrifying, never-ending, scream-your-face-off movie."</p>
+                <cite>– Megan V., Horror enthusiast</cite>
+            </blockquote>
+        </section>
 
-    <section class="testimonials" id="testimonials">
-        <h3>Survivor Testimonials</h3>
-        <blockquote>
-            <p>"I thought it was fake... until the lights went out. I screamed so hard I forgot my name!"</p>
-            <cite>– Jamie L., Possibly still lost in the maze</cite>
-        </blockquote>
-        <blockquote>
-            <p>"The Butcher’s Basement? Nope. Never again. 10/10 would recommend... to my enemies."</p>
-            <cite>– Raj P., Nervous wreck</cite>
-        </blockquote>
-        <blockquote>
-            <p>"Incredible production! Felt like a movie — a terrifying, never-ending, scream-your-face-off movie."</p>
-            <cite>– Megan V., Horror enthusiast</cite>
-        </blockquote>
-    </section>
-
-    <section class="contact" id="contact">
-        <h3>Contact Us</h3>
-        <form>
-            <input type="text" placeholder="Your Name" required><br>
-            <input type="email" placeholder="Your Email" required><br>
-            <textarea placeholder="Your Message" rows="5"></textarea><br>
-            <button type="submit">Send Message</button>
-        </form>
-        <p>Email: <a href="mailto:info@thrillticket.com">info@thrillticket.com</a></p>
-    </section>
-
-    <section class="about-org">
-        <h3>Who We Are</h3>
-        <p>
-            Founded by thrill-seekers and fear architects, ThrillTicket specializes in designing immersive haunted environments that blend horror storytelling with real-time actor interactions.
-        </p>
-    </section>
+        <section class="contact" id="contact">
+            <h3>Contact Us</h3>
+            <form>
+                <input type="text" placeholder="Your Name" required><br>
+                <input type="email" placeholder="Your Email" required><br>
+                <textarea placeholder="Your Message" rows="5"></textarea><br>
+                <button type="submit">Send Message</button>
+            </form>
+            <p>Email: <a href="mailto:info@thrillticket.com">info@thrillticket.com</a></p>
+        </section>
+    </main>
 
     <footer>
-        <div class="footer-links">
-            <a href="#">Home</a> |
-            <a href="#about">About</a> |
-            <a href="#attractions">Attractions</a> |
-            <a href="#testimonials">Testimonials</a> |
-            <a href="#contact">Contact</a>
+        <div class="footer-container">
+            <div class="footer-about">
+                <h4>About ThrillTicket</h4>
+                <p>Creators of immersive horror mazes and psychological thrill experiences since 2025. Based in your nightmares.</p>
+            </div>
+            <ul class="footer-links">
+                <li><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#attractions">Attractions</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
         </div>
-        <p>&copy; 2025 ThrillTicket. All rights reserved. Dread responsibly.</p>
+        <p class="copyright">
+            &copy; 2025 ThrillTicket. All rights reserved. Dread responsibly.
+        </p>
     </footer>
 
 </body>
