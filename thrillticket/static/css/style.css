@@ -217,3 +217,97 @@ footer p {
     width: 100%;
     box-sizing: border-box;
 }
+
+.attractions-list {
+    padding: 2rem;
+}
+
+.attraction-block {
+    margin: 2rem auto;
+    max-width: 1000px;
+    background: var(--section-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.attraction-block h2 {
+    font-size: 28px;
+    margin-bottom: 1rem;
+}
+
+.attraction-img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.attraction-testimonials blockquote {
+    background: rgba(42, 42, 42, 0.8);
+    margin: 1rem 0;
+    padding: 1rem;
+    border-left: 5px solid #ff4444;
+    color: var(--fg);
+    border-radius: 8px;
+}
+
+/* Contact Page Styles */
+.contact-info, .contact-form, .map-section {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 8px;
+    color: #fff;
+}
+
+.contact-info h2, .contact-form h2, .map-section h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.contact-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-form form input,
+.contact-form form textarea {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 4px;
+}
+
+.contact-form form button {
+    padding: 0.75rem;
+    background-color: #ff4c4c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.contact-form form button:hover {
+    background-color: #e04343;
+}
+
+/* Responsive Map */
+.map-responsive {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    height: 0;
+    margin-top: 1rem;
+}
+
+.map-responsive iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}

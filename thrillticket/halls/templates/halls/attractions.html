@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attractions | ThrillTicket</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body style="background: url('{% static 'images/haunted-bg.jpg' %}') no-repeat center center fixed; background-size: cover;">
+
+<header>
+    <div class="header-content">
+        <h1>ThrillTicket</h1>
+        <p class="subtitle">Explore Our Horror Attractions</p>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<main class="attractions-list">
+
+    {% for attraction in attractions %}
+    <section class="attraction-block">
+        <h2>{{ attraction.icon }} {{ attraction.name }}</h2>
+        <img src="{% static attraction.image %}" alt="{{ attraction.name }}" class="attraction-img">
+        <p class="desc">{{ attraction.description }}</p>
+        <div class="attraction-testimonials">
+            {% for testimonial in attraction.testimonials %}
+                <blockquote>
+                    <p>"{{ testimonial.text }}"</p>
+                    <cite>– {{ testimonial.author }}</cite>
+                </blockquote>
+            {% endfor %}
+        </div>
+    </section>
+    {% endfor %}
+
+</main>
+
+<footer>
+    <p>&copy; 2025 ThrillTicket. Haunt you soon.</p>
+</footer>
+
+</body>
+</html>
