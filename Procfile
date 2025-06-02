@@ -1,1 +1,1 @@
-web: gunicorn thrillticket.WSGI
+web: gunicorn thrillticket.wsgi:application
