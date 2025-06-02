@@ -1,0 +1,6 @@
+/.webdev/*
+/*/__pycache__/*
+/*/*/__pycache__/*
+/*/*/*/__pycache__/*
+/*/*/*/*/__pycache__/*
+/ecommerce_site/static/img/*
