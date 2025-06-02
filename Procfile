@@ -1,1 +1,1 @@
-web: gunicorn thrillticket.wsgi:application
+web: cd ThrillTicket && gunicorn ThrillTicket.wsgi:application
