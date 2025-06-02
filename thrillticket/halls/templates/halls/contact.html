@@ -1,78 +1,38 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Reach Out to Us - ThrillTicket</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
-</head>
-<body style="background: url('{% static 'images/haunted-bg.jpg' %}') no-repeat center center fixed; background-size: cover;">
+{% extends 'halls/base.html' %}
+{% block title %}Reach Out to Us | ThrillTicket{% endblock %}
+{% block content %}
 
-<header>
-    <div class="header-content">
-        <h1>ThrillTicket</h1>
-        <p class="subtitle">Enter If You Dare</p>
+<section class="contact-info">
+    <h2>Contact Information</h2>
+    <p><strong>Address:</strong> 123 Haunted Lane, Spooksville</p>
+    <p><strong>Phone:</strong> +31 70 123 4567</p>
+    <p><strong>Email:</strong> <a href="mailto:info@thrillticket.com">info@thrillticket.com</a></p>
+</section>
+
+<section class="contact-form">
+    <h2>Send Us a Message</h2>
+    {% if success %}
+        <p style="color: lightgreen;">Message sent successfully!</p>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Send Message</button>
+    </form>
+</section>
+
+<section class="map-section">
+    <h2>Our Location</h2>
+    <div class="map-responsive">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=..."
+            width="600"
+            height="450"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy">
+        </iframe>
     </div>
-    <nav>
-        <a href="/">Home</a>
-        <a href="/attractions/">Attractions</a>
-        <a href="/contact/">Reach Out to Us</a>
-    </nav>
-</header>
+</section>
 
-<main>
-    <section class="contact-info">
-        <h2>Contact Information</h2>
-        <p><strong>Address:</strong> 123 Haunted Lane, Spooksville, SH 12345</p>
-        <p><strong>Phone:</strong> +31 70 123 4567</p>
-        <p><strong>Email:</strong> <a href="mailto:info@thrillticket.com">info@thrillticket.com</a></p>
-    </section>
-
-    <section class="contact-form">
-        <h2>Send Us a Message</h2>
-        {% if success %}
-            <p style="color: lightgreen;">Message sent successfully! We'll get back to you shortly.</p>
-        {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Send Message</button>
-        </form>
-    </section>
-
-    <section class="map-section">
-        <h2>Our Location</h2>
-        <div class="map-responsive">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3887.4506376806858!2d77.58952267532253!3d13.006950014101802!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae17b55c78182f%3A0xd46d15155f682466!2sFun%20World%20Amusement%20Park!5e0!3m2!1sen!2snl!4v1748876120534!5m2!1sen!2snl"
-                width="600"
-                height="450"
-                style="border:0;"
-                allowfullscreen=""
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div>
-    </section>
-</main>
-
-<footer>
-    <div class="footer-container">
-        <div class="footer-about">
-            <h4>About ThrillTicket</h4>
-            <p>Creators of immersive horror mazes and psychological thrill experiences since 2025. Based in your nightmares.</p>
-        </div>
-        <ul class="footer-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/attractions/">Attractions</a></li>
-            <li><a href="/contact/">Reach Out to Us</a></li>
-        </ul>
-    </div>
-    <p class="copyright">
-        &copy; 2025 ThrillTicket. All rights reserved. Dread responsibly.
-    </p>
-</footer>
-
-</body>
-</html>
+{% endblock %}

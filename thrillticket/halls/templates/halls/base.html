@@ -1,0 +1,47 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}ThrillTicket{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+</head>
+<body style="background: url('{% static 'images/haunted-bg.jpg' %}') no-repeat center center fixed; background-size: cover;">
+
+<header>
+    <div class="header-content">
+        <h1>ThrillTicket</h1>
+        <p class="subtitle">Enter If You Dare</p>
+    </div>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/attractions/">Attractions</a>
+        <a href="/contact/">Reach Out to Us</a>
+    </nav>
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    <div class="footer-container">
+        <div class="footer-about">
+            <h4>About ThrillTicket</h4>
+            <p>Creators of immersive horror mazes and psychological thrill experiences since 2025. Based in your nightmares.</p>
+        </div>
+        <ul class="footer-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/attractions/">Attractions</a></li>
+            <li><a href="/contact/">Reach Out to Us</a></li>
+        </ul>
+    </div>
+    <p class="copyright">
+        &copy; 2025 ThrillTicket. All rights reserved. Dread responsibly.
+    </p>
+</footer>
+
+</body>
+</html>
