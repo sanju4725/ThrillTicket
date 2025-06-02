@@ -59,13 +59,18 @@
 
         <section class="contact" id="contact">
             <h3>Contact Us</h3>
-            <form>
-                <input type="text" placeholder="Your Name" required><br>
-                <input type="email" placeholder="Your Email" required><br>
-                <textarea placeholder="Your Message" rows="5"></textarea><br>
+
+            {% if success %}
+                <p style="color: lightgreen;">Message sent successfully! We'll get back to you shortly.</p>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
                 <button type="submit">Send Message</button>
             </form>
-            <p>Email: <a href="mailto:info@thrillticket.com">info@thrillticket.com</a></p>
+
+            <p>Email: <a href="sanju4725@gmail.com">info@thrillticket.com</a></p>
         </section>
     </main>
 
