@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .forms import BookingForm, ContactForm
 from django.core.mail import send_mail
-from .forms import ContactForm
+from django.conf import settings
+
 
 def index(request):
     form = ContactForm()
@@ -106,3 +108,31 @@ Message:
             return render(request, 'halls/contact.html', {'form': ContactForm(), 'success': True})
 
     return render(request, 'halls/contact.html', {'form': form})
+
+
+def booking_view(request):
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save()
+            # Email confirmation
+            subject = 'ThrillTicket Booking Confirmation'
+            message = f"""
+Hi {booking.name},
+
+Your booking has been confirmed!
+
+Date: {booking.date}
+Time: {booking.time}
+Phone: {booking.phone}
+
+We look forward to scaring you 😈
+
+– ThrillTicket Team
+""".strip()
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [booking.email])
+            return render(request, 'halls/booking_success.html', {'name': booking.name})
+    else:
+        form = BookingForm()
+
+    return render(request, 'halls/bookings.html', {'form': form})

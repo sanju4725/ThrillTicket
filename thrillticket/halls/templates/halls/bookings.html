@@ -1,0 +1,14 @@
+{% extends 'halls/base.html' %}
+{% block title %}Book a Visit | ThrillTicket{% endblock %}
+{% block content %}
+
+<section class="booking-form">
+    <h2>Book Your Visit</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Book Slot</button>
+    </form>
+</section>
+
+{% endblock %}
