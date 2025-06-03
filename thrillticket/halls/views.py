@@ -4,6 +4,8 @@ from django.conf import settings
 from django.utils.timezone import now
 from .forms import BookingForm, ContactForm
 from .models import Booking, Customer
+from django.db.models import Count
+from datetime import date
 
 def index(request):
     # ✅ Review Email Trigger (simplified): send review emails for past bookings
@@ -163,3 +165,24 @@ def booking_view(request):
         form = BookingForm()
 
     return render(request, 'halls/bookings.html', {'form': form})
+
+
+def calendar_view(request):
+    bookings = Booking.objects.values('date').annotate(count=Count('id'))
+    booking_data = {b['date']: b['count'] for b in bookings}
+
+    context = {
+        'booking_data': booking_data,
+        'form': BookingForm()
+    }
+    return render(request, 'calendar.html', context)
+
+def book_slot(request):
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('calendar_view')
+    else:
+        form = BookingForm()
+    return render(request, 'book_slot.html', {'form': form})
