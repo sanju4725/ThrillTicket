@@ -1,5 +1,5 @@
 from django import forms
-from .models import Booking
+from .models import Booking, Customer
 from django.forms.widgets import DateInput, TimeInput
 
 class ContactForm(forms.Form):
@@ -11,11 +11,11 @@ class ContactForm(forms.Form):
     )
     message = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Your Message'}))
 
-class BookingForm(forms.ModelForm):
-    class Meta:
-        model = Booking
-        fields = ['name', 'email', 'phone', 'date', 'time']
-        widgets = {
-            'date': DateInput(attrs={'type': 'date'}),
-            'time': TimeInput(attrs={'type': 'time'}),
-        }
+
+
+class BookingForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    phone = forms.CharField(max_length=15)
+    date = forms.DateField(widget=DateInput(attrs={'type': 'date'}))
+    time = forms.TimeField(widget=TimeInput(attrs={'type': 'time'}))

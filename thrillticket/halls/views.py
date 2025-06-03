@@ -1,10 +1,32 @@
 from django.shortcuts import render, redirect
-from .forms import BookingForm, ContactForm
 from django.core.mail import send_mail
 from django.conf import settings
-
+from django.utils.timezone import now
+from .forms import BookingForm, ContactForm
+from .models import Booking, Customer
 
 def index(request):
+    # ✅ Review Email Trigger (simplified): send review emails for past bookings
+    today = now().date()
+    past_bookings = Booking.objects.filter(date__lt=today)
+
+    for booking in past_bookings:
+        customer = booking.customer
+        # Optional: Add logic to prevent re-sending (e.g., booking.review_sent flag)
+        subject = "How was your ThrillTicket experience?"
+        message = f"""
+Hi {customer.name},
+
+You faced the horrors… now tell us what you think!  
+Leave a review at https://thrillticket.com/reviews
+
+We’d love to hear your scream-level feedback 💀
+
+– ThrillTicket Team
+"""
+        send_mail(subject, message, 'info@thrillticket.com', [customer.email])
+
+    # Handle contact form (same view as home)
     form = ContactForm()
 
     if request.method == 'POST':
@@ -114,24 +136,29 @@ def booking_view(request):
     if request.method == 'POST':
         form = BookingForm(request.POST)
         if form.is_valid():
-            booking = form.save()
-            # Email confirmation
+            name = form.cleaned_data['name']
+            email = form.cleaned_data['email']
+            phone = form.cleaned_data['phone']
+
+            # Get or create customer
+            customer, created = Customer.objects.get_or_create(
+                email=email,
+                defaults={'name': name, 'phone': phone}
+            )
+
+            booking = Booking.objects.create(
+                customer=customer,
+                date=form.cleaned_data['date'],
+                time=form.cleaned_data['time']
+            )
+
+            # Send booking confirmation
             subject = 'ThrillTicket Booking Confirmation'
-            message = f"""
-Hi {booking.name},
+            message = f"Hi {name},\n\nYour visit is booked for {booking.date} at {booking.time}.\n\nSee you soon!"
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
-Your booking has been confirmed!
+            return render(request, 'halls/booking_success.html', {'name': name})
 
-Date: {booking.date}
-Time: {booking.time}
-Phone: {booking.phone}
-
-We look forward to scaring you 😈
-
-– ThrillTicket Team
-""".strip()
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [booking.email])
-            return render(request, 'halls/booking_success.html', {'name': booking.name})
     else:
         form = BookingForm()
 
