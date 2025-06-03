@@ -3,12 +3,12 @@ from django.db import models
 # Create your models here.
 
 class Customer(models.Model):
+    phone = models.CharField(max_length=15, primary_key=True)
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15)
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.phone})"
 
 class Booking(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
