@@ -11,4 +11,57 @@
     </form>
 </section>
 
+<section class="calendar">
+    <h2>Booking Calendar</h2>
+    <div id="calendar"></div>
+</section>
+
+<style>
+    .calendar-day {
+        display: inline-block;
+        width: 14%;
+        padding: 10px;
+        margin: 1px;
+        text-align: center;
+        border: 1px solid #ccc;
+    }
+    .green { background-color: #d4edda; }
+    .yellow { background-color: #fff3cd; }
+    .red { background-color: #f8d7da; }
+    .disabled { pointer-events: none; opacity: 0.5; }
+</style>
+
+<script>
+    const bookingData = {{ booking_data|safe }};
+    const calendar = document.getElementById('calendar');
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+
+    function generateCalendar(year, month) {
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const calendarDays = [];
+
+        for (let day = 1; day <= lastDay.getDate(); day++) {
+            const date = new Date(year, month, day);
+            const dateString = date.toISOString().split('T')[0];
+            const count = bookingData[dateString] || 0;
+            let className = 'green';
+
+            if (count >= 5) {
+                className = 'red disabled';
+            } else if (count >= 3) {
+                className = 'yellow';
+            }
+
+            calendarDays.push(`<div class="calendar-day ${className}">${day}</div>`);
+        }
+
+        calendar.innerHTML = calendarDays.join('');
+    }
+
+    generateCalendar(year, month);
+</script>
+
 {% endblock %}

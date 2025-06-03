@@ -5,7 +5,9 @@ from django.utils.timezone import now
 from .forms import BookingForm, ContactForm
 from .models import Booking, Customer
 from django.db.models import Count
-from datetime import date
+from datetime import date, datetime, timedelta, time as dt_time
+
+
 
 def index(request):
     # ✅ Review Email Trigger (simplified): send review emails for past bookings
@@ -133,7 +135,6 @@ Message:
 
     return render(request, 'halls/contact.html', {'form': form})
 
-
 def booking_view(request):
     if request.method == 'POST':
         form = BookingForm(request.POST)
@@ -141,48 +142,46 @@ def booking_view(request):
             name = form.cleaned_data['name']
             email = form.cleaned_data['email']
             phone = form.cleaned_data['phone']
+            booking_date = form.cleaned_data['date']
+            booking_time = form.cleaned_data['time']
 
-            # Get or create customer
-            customer, created = Customer.objects.get_or_create(
-                email=email,
-                defaults={'name': name, 'phone': phone}
-            )
+            # Enforce booking time constraints
+            if not dt_time(11, 0) <= booking_time <= dt_time(20, 0):
+                form.add_error('time', 'Bookings are allowed only between 11 AM and 8 PM.')
+            else:
+                # Check for overlapping bookings (2-hour slots)
+                overlap_start = (datetime.combine(booking_date, booking_time) - timedelta(hours=2)).time()
+                overlap_end = (datetime.combine(booking_date, booking_time) + timedelta(hours=2)).time()
+                overlapping = Booking.objects.filter(
+                    date=booking_date,
+                    time__gte=overlap_start,
+                    time__lt=overlap_end
+                )
+                if overlapping.exists():
+                    form.add_error('time', 'This time slot overlaps with an existing booking.')
+                else:
+                    # Get or create customer
+                    customer, created = Customer.objects.get_or_create(
+                        email=email,
+                        defaults={'name': name, 'phone': phone}
+                    )
+                    Booking.objects.create(
+                        customer=customer,
+                        date=booking_date,
+                        time=booking_time
+                    )
 
-            booking = Booking.objects.create(
-                customer=customer,
-                date=form.cleaned_data['date'],
-                time=form.cleaned_data['time']
-            )
+                    # Send booking confirmation
+                    subject = 'ThrillTicket Booking Confirmation'
+                    message = f"Hi {name},\n\nYour visit is booked for {booking_date} at {booking_time}.\n\nSee you soon!"
+                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
-            # Send booking confirmation
-            subject = 'ThrillTicket Booking Confirmation'
-            message = f"Hi {name},\n\nYour visit is booked for {booking.date} at {booking.time}.\n\nSee you soon!"
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
-
-            return render(request, 'halls/booking_success.html', {'name': name})
-
+                    return render(request, 'halls/booking_success.html', {'name': name})
     else:
         form = BookingForm()
 
-    return render(request, 'halls/bookings.html', {'form': form})
-
-
-def calendar_view(request):
+    # Prepare booking data for the calendar
     bookings = Booking.objects.values('date').annotate(count=Count('id'))
-    booking_data = {b['date']: b['count'] for b in bookings}
+    booking_data = {b['date'].strftime('%Y-%m-%d'): b['count'] for b in bookings}
 
-    context = {
-        'booking_data': booking_data,
-        'form': BookingForm()
-    }
-    return render(request, 'calendar.html', context)
-
-def book_slot(request):
-    if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('calendar_view')
-    else:
-        form = BookingForm()
-    return render(request, 'book_slot.html', {'form': form})
+    return render(request, 'halls/bookings.html', {'form': form, 'booking_data': booking_data})
