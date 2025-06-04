@@ -143,7 +143,7 @@ def booking_view(request):
         customer = Customer.objects.filter(phone=phone).first()
         if customer:
             # Proceed to calendar view
-            return redirect('calendar_view', customer_id=customer.id)
+            return redirect('calendar_view', customer_id=customer.phone)
         else:
             # Prompt for name and email
             return render(request, 'halls/enter_details.html', {'phone': phone})

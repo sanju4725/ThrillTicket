@@ -1,27 +1,60 @@
 {% extends 'halls/base.html' %}
 {% block content %}
 <h2>Select a Date</h2>
-<div id="calendar"></div>
+
+<div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">
+    {% for day in booking_data.keys %}
+        {% with count=booking_data.day %}
+            {% if count >= 5 %}
+                <div class="calendar-day red disabled" data-date="{{ day }}">{{ day|date:"d" }}</div>
+            {% elif count >= 3 %}
+                <div class="calendar-day yellow" data-date="{{ day }}">{{ day|date:"d" }}</div>
+            {% else %}
+                <div class="calendar-day green" data-date="{{ day }}">{{ day|date:"d" }}</div>
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+</div>
+
 <div id="slots"></div>
 
+<style>
+    .calendar-day {
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+    .green { background-color: #d4edda; }
+    .yellow { background-color: #fff3cd; }
+    .red { background-color: #f8d7da; }
+    .disabled { pointer-events: none; opacity: 0.5; }
+</style>
+
 <script>
-    const bookingData = {{ booking_data|safe }};
-    const customerId = {{ customer_id }};
-    // Initialize calendar (use a JS calendar library or custom implementation)
-    // Highlight dates based on bookingData
-    // On date click, fetch available slots
-    document.getElementById('calendar').addEventListener('click', function(e) {
-        const selectedDate = e.target.dataset.date;
-        fetch(`/get_available_slots/?date=${selectedDate}`)
+    const calendar = document.getElementById('calendar');
+    const slots = document.getElementById('slots');
+    const customerId = "{{ customer_id }}";
+
+    calendar.addEventListener('click', function (e) {
+        const date = e.target.dataset.date;
+        if (!date) return;
+
+        fetch(`/get_available_slots/?date=${date}`)
             .then(response => response.json())
             .then(data => {
-                let slotsHtml = '<h3>Available Time Slots</h3><form method="POST" action="/book_slot/' + customerId + '/">';
-                slotsHtml += '<input type="hidden" name="date" value="' + selectedDate + '">';
+                if (data.error) {
+                    slots.innerHTML = `<p>${data.error}</p>`;
+                    return;
+                }
+
+                let form = `<h3>Select a Time Slot</h3><form method="POST" action="/book_slot/${customerId}/">`;
+                form += `<input type="hidden" name="date" value="${date}">`;
                 data.slots.forEach(slot => {
-                    slotsHtml += `<label><input type="radio" name="time" value="${slot}" required> ${slot}</label><br>`;
+                    form += `<label><input type="radio" name="time" value="${slot}" required> ${slot}</label><br>`;
                 });
-                slotsHtml += '<button type="submit">Book Slot</button></form>';
-                document.getElementById('slots').innerHTML = slotsHtml;
+                form += `<button type="submit">Book Slot</button></form>`;
+                slots.innerHTML = form;
             });
     });
 </script>
