@@ -1,0 +1,11 @@
+{% extends 'halls/base.html' %}
+{% block content %}
+<h2>Enter Your Details</h2>
+<form method="POST" action="{% url 'save_customer_details' %}">
+    {% csrf_token %}
+    <input type="hidden" name="phone" value="{{ phone }}">
+    <input type="text" name="name" placeholder="Name" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <button type="submit">Continue</button>
+</form>
+{% endblock %}

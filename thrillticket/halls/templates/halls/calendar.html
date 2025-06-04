@@ -1,0 +1,28 @@
+{% extends 'halls/base.html' %}
+{% block content %}
+<h2>Select a Date</h2>
+<div id="calendar"></div>
+<div id="slots"></div>
+
+<script>
+    const bookingData = {{ booking_data|safe }};
+    const customerId = {{ customer_id }};
+    // Initialize calendar (use a JS calendar library or custom implementation)
+    // Highlight dates based on bookingData
+    // On date click, fetch available slots
+    document.getElementById('calendar').addEventListener('click', function(e) {
+        const selectedDate = e.target.dataset.date;
+        fetch(`/get_available_slots/?date=${selectedDate}`)
+            .then(response => response.json())
+            .then(data => {
+                let slotsHtml = '<h3>Available Time Slots</h3><form method="POST" action="/book_slot/' + customerId + '/">';
+                slotsHtml += '<input type="hidden" name="date" value="' + selectedDate + '">';
+                data.slots.forEach(slot => {
+                    slotsHtml += `<label><input type="radio" name="time" value="${slot}" required> ${slot}</label><br>`;
+                });
+                slotsHtml += '<button type="submit">Book Slot</button></form>';
+                document.getElementById('slots').innerHTML = slotsHtml;
+            });
+    });
+</script>
+{% endblock %}

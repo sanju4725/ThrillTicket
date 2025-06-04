@@ -6,6 +6,7 @@ from .forms import BookingForm, ContactForm
 from .models import Booking, Customer
 from django.db.models import Count
 from datetime import date, datetime, timedelta, time as dt_time
+from django.http import JsonResponse
 
 
 
@@ -135,53 +136,67 @@ Message:
 
     return render(request, 'halls/contact.html', {'form': form})
 
+
 def booking_view(request):
     if request.method == 'POST':
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            phone = form.cleaned_data['phone']
-            booking_date = form.cleaned_data['date']
-            booking_time = form.cleaned_data['time']
+        phone = request.POST.get('phone')
+        customer = Customer.objects.filter(phone=phone).first()
+        if customer:
+            # Proceed to calendar view
+            return redirect('calendar_view', customer_id=customer.id)
+        else:
+            # Prompt for name and email
+            return render(request, 'halls/enter_details.html', {'phone': phone})
+    return render(request, 'halls/booking_start.html')
 
-            # Enforce booking time constraints
-            if not dt_time(11, 0) <= booking_time <= dt_time(20, 0):
-                form.add_error('time', 'Bookings are allowed only between 11 AM and 8 PM.')
-            else:
-                # Check for overlapping bookings (2-hour slots)
-                overlap_start = (datetime.combine(booking_date, booking_time) - timedelta(hours=2)).time()
-                overlap_end = (datetime.combine(booking_date, booking_time) + timedelta(hours=2)).time()
-                overlapping = Booking.objects.filter(
-                    date=booking_date,
-                    time__gte=overlap_start,
-                    time__lt=overlap_end
-                )
-                if overlapping.exists():
-                    form.add_error('time', 'This time slot overlaps with an existing booking.')
-                else:
-                    # Get or create customer
-                    customer, created = Customer.objects.get_or_create(
-                        email=email,
-                        defaults={'name': name, 'phone': phone}
-                    )
-                    Booking.objects.create(
-                        customer=customer,
-                        date=booking_date,
-                        time=booking_time
-                    )
+def save_customer_details(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
 
-                    # Send booking confirmation
-                    subject = 'ThrillTicket Booking Confirmation'
-                    message = f"Hi {name},\n\nYour visit is booked for {booking_date} at {booking_time}.\n\nSee you soon!"
-                    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+        # Try to find customer by email first
+        customer = Customer.objects.filter(email=email).first()
+        if customer:
+            # Update phone if not set
+            if customer.phone != phone:
+                customer.phone = phone
+                customer.save()
+        else:
+            customer = Customer.objects.create(name=name, email=email, phone=phone)
 
-                    return render(request, 'halls/booking_success.html', {'name': name})
-    else:
-        form = BookingForm()
+        return redirect('calendar_view', customer_id=customer.phone)
+    return redirect('booking_view')
 
-    # Prepare booking data for the calendar
+def calendar_view(request, customer_id):
     bookings = Booking.objects.values('date').annotate(count=Count('id'))
-    booking_data = {b['date'].strftime('%Y-%m-%d'): b['count'] for b in bookings}
+    booking_data = {b['date']: b['count'] for b in bookings}
+    return render(request, 'halls/calendar.html', {'booking_data': booking_data, 'customer_id': customer_id})
 
-    return render(request, 'halls/bookings.html', {'form': form, 'booking_data': booking_data})
+def get_available_slots(request):
+    date_str = request.GET.get('date')
+    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+    existing_bookings = Booking.objects.filter(date=date_obj).values_list('time', flat=True)
+    all_slots = [dtime(hour=h) for h in range(11, 20, 2)]  # 11 AM to 7 PM
+    available_slots = []
+    for slot in all_slots:
+        slot_end = (datetime.combine(date_obj, slot) + timedelta(hours=2)).time()
+        overlap = Booking.objects.filter(date=date_obj, time__lt=slot_end, time__gte=slot).exists()
+        if not overlap:
+            available_slots.append(slot.strftime('%H:%M'))
+    return JsonResponse({'slots': available_slots})
+
+def book_slot(request, customer_id):
+    if request.method == 'POST':
+        date_str = request.POST.get('date')
+        time_str = request.POST.get('time')
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+        time_obj = datetime.strptime(time_str, '%H:%M').time()
+        customer = Customer.objects.get(id=customer_id)
+        Booking.objects.create(customer=customer, date=date_obj, time=time_obj)
+        # Send confirmation email
+        subject = 'ThrillTicket Booking Confirmation'
+        message = f"Hi {customer.name},\n\nYour visit is booked for {date_obj} at {time_obj}.\n\nSee you soon!"
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [customer.email])
+        return render(request, 'halls/booking_success.html', {'name': customer.name})
+    return redirect('calendar_view', customer_id=customer_id)
