@@ -1,22 +1,24 @@
+{% load get_item %}
 {% extends 'halls/base.html' %}
 {% block content %}
+
 <h2>Select a Date</h2>
 
-<div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px;">
-    {% for day in booking_data.keys %}
-        {% with count=booking_data.day %}
-            {% if count >= 5 %}
-                <div class="calendar-day red disabled" data-date="{{ day }}">{{ day|date:"d" }}</div>
-            {% elif count >= 3 %}
-                <div class="calendar-day yellow" data-date="{{ day }}">{{ day|date:"d" }}</div>
+<div id="calendar" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px;">
+    {% for day in days %}
+        {% with iso_day=day|stringformat:"Y-m-d" %}
+            {% if booking_data|get_item:iso_day >= 5 %}
+                <div class="calendar-day red disabled" data-date="{{ iso_day }}">{{ day.day }}</div>
+            {% elif booking_data|get_item:iso_day >= 3 %}
+                <div class="calendar-day yellow" data-date="{{ iso_day }}">{{ day.day }}</div>
             {% else %}
-                <div class="calendar-day green" data-date="{{ day }}">{{ day|date:"d" }}</div>
+                <div class="calendar-day green" data-date="{{ iso_day }}">{{ day.day }}</div>
             {% endif %}
         {% endwith %}
     {% endfor %}
 </div>
 
-<div id="slots"></div>
+<div id="slots" style="margin-top: 2rem;"></div>
 
 <style>
     .calendar-day {
@@ -27,13 +29,12 @@
     }
     .green { background-color: #d4edda; }
     .yellow { background-color: #fff3cd; }
-    .red { background-color: #f8d7da; }
-    .disabled { pointer-events: none; opacity: 0.5; }
+    .red { background-color: #f8d7da; pointer-events: none; opacity: 0.6; }
 </style>
 
 <script>
     const calendar = document.getElementById('calendar');
-    const slots = document.getElementById('slots');
+    const slotsDiv = document.getElementById('slots');
     const customerId = "{{ customer_id }}";
 
     calendar.addEventListener('click', function (e) {
@@ -43,19 +44,16 @@
         fetch(`/get_available_slots/?date=${date}`)
             .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    slots.innerHTML = `<p>${data.error}</p>`;
-                    return;
-                }
-
-                let form = `<h3>Select a Time Slot</h3><form method="POST" action="/book_slot/${customerId}/">`;
-                form += `<input type="hidden" name="date" value="${date}">`;
+                let slotHTML = `<h3>Available Time Slots for ${date}</h3>`;
+                slotHTML += `<form method="POST" action="/book_slot/${customerId}/">`;
+                slotHTML += `<input type="hidden" name="date" value="${date}">`;
                 data.slots.forEach(slot => {
-                    form += `<label><input type="radio" name="time" value="${slot}" required> ${slot}</label><br>`;
+                    slotHTML += `<label><input type="radio" name="time" value="${slot}" required> ${slot}</label><br>`;
                 });
-                form += `<button type="submit">Book Slot</button></form>`;
-                slots.innerHTML = form;
+                slotHTML += `<button type="submit">Book Slot</button></form>`;
+                slotsDiv.innerHTML = slotHTML;
             });
     });
 </script>
+
 {% endblock %}

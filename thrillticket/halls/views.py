@@ -7,7 +7,7 @@ from .models import Booking, Customer
 from django.db.models import Count
 from datetime import date, datetime, timedelta, time as dt_time
 from django.http import JsonResponse
-
+from calendar import monthrange
 
 
 def index(request):
@@ -17,7 +17,6 @@ def index(request):
 
     for booking in past_bookings:
         customer = booking.customer
-        # Optional: Add logic to prevent re-sending (e.g., booking.review_sent flag)
         subject = "How was your ThrillTicket experience?"
         message = f"""
 Hi {customer.name},
@@ -31,7 +30,6 @@ We’d love to hear your scream-level feedback 💀
 """
         send_mail(subject, message, 'info@thrillticket.com', [customer.email])
 
-    # Handle contact form (same view as home)
     form = ContactForm()
 
     if request.method == 'POST':
@@ -62,6 +60,7 @@ Message:
             return render(request, 'halls/index.html', {'form': ContactForm(), 'success': True})
 
     return render(request, 'halls/index.html', {'form': form})
+
 
 def attractions(request):
     attractions_data = [
@@ -105,49 +104,17 @@ def attractions(request):
     ]
     return render(request, 'halls/attractions.html', {'attractions': attractions_data})
 
-def contact_view(request):
-    form = ContactForm()
-    if request.method == 'POST':
-        form = ContactForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['name']
-            email = form.cleaned_data['email']
-            mobile = form.cleaned_data.get('mobile', 'Not provided')
-            message = form.cleaned_data['message']
-
-            full_message = f"""
-New contact form submission from ThrillTicket:
-
-Name: {name}
-Email: {email}
-Mobile: {mobile or 'Not provided'}
-
-Message:
-{message}
-            """.strip()
-
-            send_mail(
-                subject=f"[ThrillTicket] Message from {name}",
-                message=full_message,
-                from_email=email,
-                recipient_list=['info@thrillticket.com'],
-            )
-            return render(request, 'halls/contact.html', {'form': ContactForm(), 'success': True})
-
-    return render(request, 'halls/contact.html', {'form': form})
-
 
 def booking_view(request):
     if request.method == 'POST':
         phone = request.POST.get('phone')
         customer = Customer.objects.filter(phone=phone).first()
         if customer:
-            # Proceed to calendar view
             return redirect('calendar_view', customer_id=customer.phone)
         else:
-            # Prompt for name and email
             return render(request, 'halls/enter_details.html', {'phone': phone})
     return render(request, 'halls/booking_start.html')
+
 
 def save_customer_details(request):
     if request.method == 'POST':
@@ -155,10 +122,8 @@ def save_customer_details(request):
         email = request.POST.get('email')
         phone = request.POST.get('phone')
 
-        # Try to find customer by email first
         customer = Customer.objects.filter(email=email).first()
         if customer:
-            # Update phone if not set
             if customer.phone != phone:
                 customer.phone = phone
                 customer.save()
@@ -168,16 +133,40 @@ def save_customer_details(request):
         return redirect('calendar_view', customer_id=customer.phone)
     return redirect('booking_view')
 
+
 def calendar_view(request, customer_id):
-    bookings = Booking.objects.values('date').annotate(count=Count('id'))
-    booking_data = {b['date']: b['count'] for b in bookings}
-    return render(request, 'halls/calendar.html', {'booking_data': booking_data, 'customer_id': customer_id})
+    try:
+        customer = Customer.objects.get(phone=customer_id)
+    except Customer.DoesNotExist:
+        return redirect('booking_view')
+
+    today = date.today()
+    year, month = today.year, today.month
+    num_days = monthrange(year, month)[1]
+
+    all_days = [date(year, month, day) for day in range(1, num_days + 1)]
+    bookings = Booking.objects.filter(date__month=month).values('date').annotate(count=Count('id'))
+    booking_data = {b['date'].isoformat(): b['count'] for b in bookings}
+
+    return render(request, 'halls/calendar.html', {
+        'days': all_days,
+        'booking_data': booking_data,
+        'customer_id': customer.phone
+    })
+
 
 def get_available_slots(request):
     date_str = request.GET.get('date')
-    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+    if not date_str:
+        return JsonResponse({'error': 'Missing date parameter'}, status=400)
+
+    try:
+        date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format'}, status=400)
+
     existing_bookings = Booking.objects.filter(date=date_obj).values_list('time', flat=True)
-    all_slots = [dtime(hour=h) for h in range(11, 20, 2)]  # 11 AM to 7 PM
+    all_slots = [dt_time(hour=h) for h in range(11, 20, 2)]  # 11 AM to 7 PM
     available_slots = []
     for slot in all_slots:
         slot_end = (datetime.combine(date_obj, slot) + timedelta(hours=2)).time()
@@ -186,17 +175,22 @@ def get_available_slots(request):
             available_slots.append(slot.strftime('%H:%M'))
     return JsonResponse({'slots': available_slots})
 
+
 def book_slot(request, customer_id):
     if request.method == 'POST':
         date_str = request.POST.get('date')
         time_str = request.POST.get('time')
+
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
         time_obj = datetime.strptime(time_str, '%H:%M').time()
-        customer = Customer.objects.get(id=customer_id)
+        customer = Customer.objects.get(phone=customer_id)
+
         Booking.objects.create(customer=customer, date=date_obj, time=time_obj)
-        # Send confirmation email
+
         subject = 'ThrillTicket Booking Confirmation'
         message = f"Hi {customer.name},\n\nYour visit is booked for {date_obj} at {time_obj}.\n\nSee you soon!"
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [customer.email])
+
         return render(request, 'halls/booking_success.html', {'name': customer.name})
+
     return redirect('calendar_view', customer_id=customer_id)
